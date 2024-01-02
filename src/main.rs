@@ -34,6 +34,13 @@ fn main() -> ExitCode {
         println!("missing query");
         exit(1);
     }
+    let l = args.len() - 1;
+    Notification::new()
+        .summary("Spotify Downloader")
+        .body(format!("Started to download {l} query").as_str())
+        .icon("spot_dwl")
+        .show()
+        .expect("Missing notify-send");
     for (x, item) in args.iter().enumerate().skip(1) {
         Command::new("clear").spawn().expect("windows");
         assert!(Command::new("spotdl")
@@ -47,7 +54,7 @@ fn main() -> ExitCode {
 
         Notification::new()
             .summary("Spotify Downloader")
-            .body(format!("Query {x} downloaded successfully").as_str())
+            .body(format!("Query {x}/{l} downloaded successfully").as_str())
             .icon("spot_dwl")
             .show()
             .expect("Missing notify-send");
