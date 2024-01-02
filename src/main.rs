@@ -3,8 +3,9 @@ use std::{
     env::args,
     fs,
     path::Path,
-    process::{exit, Command, ExitCode, Stdio},
+    process::{exit, Command, ExitCode},
 };
+
 ///
 /// adazaz
 ///
@@ -13,36 +14,67 @@ fn main() -> ExitCode {
 
     let p: String = format!("{}/.icons", env!("HOME"));
     let f = format!("{p}/spot_dwl.png");
+
     if !Path::new(p.as_str()).is_dir() {
         fs::create_dir(&p).expect("Fail to create the icons directory");
     }
+
     if !Path::new(f.as_str()).is_file() {
         Command::new("wget")
             .arg("https://raw.githubusercontent.com/taishingi/spot_dwl/master/icons/spot_dwl.png")
+            .arg("-q")
             .spawn()
-            .expect("failed to get icon");
-        fs::copy("./spot_dwl.png", p.as_str()).expect("msg");
-        fs::remove_file("./spot_dwl.png").expect("failed to remove file");
+            .expect("failed to get icon")
+            .wait()
+            .expect("msg");
+        fs::copy("spot_dwl.png", f.as_str()).expect("fail to copy img");
+        fs::remove_file("spot_dwl.png").expect("Fail to remove image");
     }
     if args.len() == 1 {
         println!("missing query");
         exit(1);
     }
+    let l = args.len() - 1;
+    Notification::new()
+        .summary("Spotify Downloader")
+        .body(format!("Started to download {l} query").as_str())
+        .icon("spot_dwl")
+        .show()
+        .expect("Missing notify-send");
     for (x, item) in args.iter().enumerate().skip(1) {
-        Command::new("spotdl")
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
+        Command::new("clear").spawn().expect("windows");
+        assert!(Command::new("spotdl")
             .arg("--config")
             .arg(item.as_str())
             .spawn()
-            .unwrap_or_else(|_| panic!("Failed to parse {x} list retry to run spot_dwl {item}"));
+            .expect("spotdl not founded")
+            .wait()
+            .expect("msg")
+            .success());
 
         Notification::new()
             .summary("Spotify Downloader")
-            .body(format!("Query {x} downloaded").as_str())
+            .body(format!("Query {x}/{l} downloaded successfully").as_str())
             .icon("spot_dwl")
             .show()
             .expect("Missing notify-send");
     }
+    
+    if l >= 2 {
+        Notification::new()
+            .summary("Spotify Downloader")
+            .body(format!("Finnish to downloaded {l} queries").as_str())
+            .icon("spot_dwl")
+            .show()
+            .expect("Missing notify-send");
+    } else {
+        Notification::new()
+            .summary("Spotify Downloader")
+            .body(format!("Finnish to downloaded {l} query").as_str())
+            .icon("spot_dwl")
+            .show()
+            .expect("Missing notify-send");
+    }
+
     exit(0);
 }
