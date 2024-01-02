@@ -59,5 +59,22 @@ fn main() -> ExitCode {
             .show()
             .expect("Missing notify-send");
     }
+    
+    if l >= 2 {
+        Notification::new()
+            .summary("Spotify Downloader")
+            .body(format!("Finnish to downloaded {l} queries").as_str())
+            .icon("spot_dwl")
+            .show()
+            .expect("Missing notify-send");
+    } else {
+        Notification::new()
+            .summary("Spotify Downloader")
+            .body(format!("Finnish to downloaded {l} query").as_str())
+            .icon("spot_dwl")
+            .show()
+            .expect("Missing notify-send");
+    }
+
     exit(0);
 }
