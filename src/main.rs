@@ -1,10 +1,12 @@
-use notify_rust::Notification;
 use std::{
     env::args,
     fs,
     path::Path,
     process::{exit, Command, ExitCode},
 };
+
+pub mod notification;
+use crate::notification::spot::Notification;
 
 ///
 /// adazaz
@@ -35,12 +37,11 @@ fn main() -> ExitCode {
         exit(1);
     }
     let l = args.len() - 1;
-    Notification::new()
+    assert!(Notification::new()
         .summary("Spotify Downloader")
         .body(format!("Started to download {l} query").as_str())
         .icon("spot_dwl")
-        .show()
-        .expect("Missing notify-send");
+        .send());
     for (x, item) in args.iter().enumerate().skip(1) {
         Command::new("clear").spawn().expect("windows");
         assert!(Command::new("spotdl")
@@ -52,28 +53,25 @@ fn main() -> ExitCode {
             .expect("msg")
             .success());
 
-        Notification::new()
+        assert!(Notification::new()
             .summary("Spotify Downloader")
             .body(format!("Query {x}/{l} downloaded successfully").as_str())
             .icon("spot_dwl")
-            .show()
-            .expect("Missing notify-send");
+            .send());
     }
-    
+
     if l >= 2 {
-        Notification::new()
+        assert!(Notification::new()
             .summary("Spotify Downloader")
             .body(format!("Finnish to downloaded {l} queries").as_str())
             .icon("spot_dwl")
-            .show()
-            .expect("Missing notify-send");
+            .send());
     } else {
-        Notification::new()
+        assert!(Notification::new()
             .summary("Spotify Downloader")
             .body(format!("Finnish to downloaded {l} query").as_str())
             .icon("spot_dwl")
-            .show()
-            .expect("Missing notify-send");
+            .send());
     }
 
     exit(0);
