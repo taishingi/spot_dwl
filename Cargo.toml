@@ -1,6 +1,6 @@
 [package]
 name = "spot_dwl"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 license-file = "LICENSE"
 description = "A simple helper to download songs from spotify using spotdl"
