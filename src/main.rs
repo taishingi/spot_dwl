@@ -5,8 +5,7 @@ use std::{
     process::{exit, Command, ExitCode},
 };
 
-pub mod notification;
-use crate::notification::spot::Notification;
+use notifme::Notification;
 
 ///
 /// adazaz
