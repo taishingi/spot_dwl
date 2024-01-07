@@ -14,22 +14,23 @@ fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
 
     let p: String = format!("{}/.icons", env!("HOME"));
-    let f = format!("{p}/spot_dwl.png");
+    let f: String = format!("{p}/spot_dwl.png");
 
     if !Path::new(p.as_str()).is_dir() {
         fs::create_dir(&p).expect("Fail to create the icons directory");
     }
 
     if !Path::new(f.as_str()).is_file() {
-        Command::new("wget")
+        assert!(Command::new("wget")
             .arg("https://raw.githubusercontent.com/taishingi/spot_dwl/master/icons/spot_dwl.png")
             .arg("-q")
             .spawn()
             .expect("failed to get icon")
             .wait()
-            .expect("msg");
-        fs::copy("spot_dwl.png", f.as_str()).expect("fail to copy img");
-        fs::remove_file("spot_dwl.png").expect("Fail to remove image");
+            .expect("msg")
+            .success());
+        assert!(fs::copy("spot_dwl.png", f.as_str()).is_ok());
+        assert!(fs::remove_file("spot_dwl.png").is_ok());
     }
     if args.len() == 1 {
         println!("missing query");
@@ -42,7 +43,12 @@ fn main() -> ExitCode {
         .icon("spot_dwl")
         .send());
     for (x, item) in args.iter().enumerate().skip(1) {
-        Command::new("clear").spawn().expect("windows");
+        assert!(Command::new("clear")
+            .spawn()
+            .expect("windows")
+            .wait()
+            .expect("msg")
+            .success());
         assert!(Command::new("spotdl")
             .arg("--config")
             .arg(item.as_str())
