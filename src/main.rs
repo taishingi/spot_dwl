@@ -14,7 +14,7 @@ fn main() -> ExitCode {
     let args: Vec<String> = args().collect();
 
     let p: String = format!("{}/.icons", env!("HOME"));
-    let f = format!("{p}/spot_dwl.png");
+    let f: String = format!("{p}/spot_dwl.png");
 
     if !Path::new(p.as_str()).is_dir() {
         fs::create_dir(&p).expect("Fail to create the icons directory");
